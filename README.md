@@ -10,9 +10,8 @@ import (
 
 )
 
-/** +++++++++++++++++++++++++++++++++++++++++++++++++++
- ** 初始化爬虫
- ** +++++++++++++++++++++++++++++++++++++++++++++++++++ **/
+//初始化爬虫
+
 func NewSpider() gspider.ISpider {
 
     request := getHtmlRequest()
@@ -51,9 +50,8 @@ func NewSpider() gspider.ISpider {
 
 }
 
-/** +++++++++++++++++++++++++++++++++++++++++++++++++++
- ** 自定义分析器
- ** +++++++++++++++++++++++++++++++++++++++++++++++++++ **/
+//自定义分析器
+
 type (
 
     CustomAnalyzer struct {
@@ -64,9 +62,8 @@ type (
 
 )
 
-/** +++++++++++++++++++++++++++++++++++++++++++++++++++
- ** 初始化分析器
- ** +++++++++++++++++++++++++++++++++++++++++++++++++++ **/
+//初始化分析器
+
 func NewCustomAnalyzer(reqeust gspider.IHtmlRequest) gspider.IAnalyzer {
 
     return &CustomAnalyzer{
@@ -81,9 +78,8 @@ func NewCustomAnalyzer(reqeust gspider.IHtmlRequest) gspider.IAnalyzer {
 
 }
 
-/** +++++++++++++++++++++++++++++++++++++++++++++++++++
- ** 解析页面
- ** +++++++++++++++++++++++++++++++++++++++++++++++++++ **/
+//解析页面
+
 func (s *CustomAnalyzer) Parse(page gspider.IPage) interface{} {
 
     result := page.GetContent(s.Request)
@@ -92,9 +88,8 @@ func (s *CustomAnalyzer) Parse(page gspider.IPage) interface{} {
 
 }
 
-/** +++++++++++++++++++++++++++++++++++++++++++++++++++
- ** 输出爬取结果
- ** +++++++++++++++++++++++++++++++++++++++++++++++++++ **/
+//输出爬取结果
+
 func outputResult(result *gspider.SpiderResult) {
 
     results, ok := result.Data.(gspider.HtmlTagList)
@@ -114,9 +109,8 @@ func outputResult(result *gspider.SpiderResult) {
 
 }
 
-/** +++++++++++++++++++++++++++++++++++++++++++++++++++
- ** 获取Http请求对象
- ** +++++++++++++++++++++++++++++++++++++++++++++++++++ **/
+//获取Http请求对象
+
 func getHtmlRequest() gspider.IHtmlRequest {
 
     headers := map[string]string{
