@@ -15,6 +15,8 @@ type (
 		Description string      `json:"description"`
 		ImageUrl    string      `json:"image_url"`
 		LinkUrl     string      `json:"link_url"`
+		Extend      string      `json:"extend"`
+		Next        *HtmlTag    `json:"next"`
 		Childs      HtmlTagList `json:"children"`
 	}
 )

@@ -21,8 +21,11 @@ type (
 	 * Page接口
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	IPage interface {
+		GetTag() string
 		GetName() string
-		GetContent(request IHtmlRequest) []byte
+		GetUrl() string
+		GetData(request IHtmlRequest) []byte
+		GetExtend() interface{}
 	}
 
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -31,28 +34,37 @@ type (
 	Page struct {
 		Name     string
 		Url      string
-		Content  []byte
 		Filename string
+		Data     []byte
+		Tag      string
+		Extend   interface{}
 	}
 )
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- * 获取自定义名称
+ * 获取名称
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 func (s *Page) GetName() string {
 	return s.Name
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * 获取Url
+ * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+func (s *Page) GetUrl() string {
+	return s.Url
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * 获取页面数据
  * 优先级由高到低 Content > Filename > Url
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-func (s *Page) GetContent(request IHtmlRequest) []byte {
-	var content []byte
+func (s *Page) GetData(request IHtmlRequest) []byte {
+	var data []byte
 
-	if len(s.Content) > 0 {
+	if len(s.Data) > 0 {
 		//直接获取数据
-		content = s.Content
+		data = s.Data
 	} else if len(s.Filename) > 0 {
 		//从磁盘文件获取数据
 		currentPath := glib.GetCurrentPath()
@@ -60,21 +72,36 @@ func (s *Page) GetContent(request IHtmlRequest) []byte {
 
 		fileContent, err := glib.GetFileContent(fullPath)
 		if err == nil {
-			content = fileContent
+			data = fileContent
+			s.Data = data
 		}
+
 	} else {
 		//从Url下载数据
-		log.Printf("GetContent Url: %s", s.Url)
-		resp, err := request.Get(s.Url)
-
-		if err == nil {
-			content = resp.GetContent()
-		} else {
-			log.Printf("GetContent error: %v", err)
+		if request != nil {
+			resp, err := request.Get(s.Url)
+			if err == nil {
+				data = resp.GetData()
+				s.Data = data
+			} else {
+				log.Printf("GetData error: %v", err)
+			}
 		}
 	}
 
-	s.Content = content
+	return data
+}
 
-	return s.Content
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * 获取Tag
+ * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+func (s *Page) GetTag() string {
+	return s.Tag
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * 获取扩展数据
+ * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+func (s *Page) GetExtend() interface{} {
+	return s.Extend
 }

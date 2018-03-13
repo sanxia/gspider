@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+import (
+	"github.com/sanxia/glib"
+)
+
 /* ================================================================================
  * 爬虫
  * qq group: 582452342
@@ -29,13 +33,16 @@ type (
 	 * 爬虫数据结构
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	Spider struct {
-		request      IHtmlRequest
-		analyzers    map[string]IAnalyzer
-		downloadChan chan IPage
-		parseChan    chan IPage
-		resultChan   chan *SpiderResult
-		doneChan     chan bool
-		isDone       bool
+		request              IHtmlRequest
+		analyzers            map[string]IAnalyzer
+		downloadChan         chan IPage
+		parseChan            chan IPage
+		resultChan           chan *SpiderResult
+		doneChan             chan bool
+		perSecondDownload    int
+		currentDownloadCount int
+		downloadCount        int
+		isDone               bool
 	}
 
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -56,11 +63,12 @@ func NewSpider(maxCount int) ISpider {
 	}
 
 	spider := &Spider{
-		analyzers:    make(map[string]IAnalyzer, 0),
-		downloadChan: make(chan IPage, maxCount),
-		parseChan:    make(chan IPage, maxCount),
-		resultChan:   make(chan *SpiderResult, 0),
-		doneChan:     make(chan bool),
+		analyzers:         make(map[string]IAnalyzer, 0),
+		perSecondDownload: 5,
+		downloadChan:      make(chan IPage, maxCount),
+		parseChan:         make(chan IPage, maxCount),
+		resultChan:        make(chan *SpiderResult, maxCount),
+		doneChan:          make(chan bool),
 	}
 
 	return spider
@@ -122,10 +130,30 @@ func (s *Spider) AddPage(page IPage) {
 func (s *Spider) download() {
 	for {
 		select {
-		case <-time.After(time.Second * 30):
+		case <-time.After(time.Minute * 5):
 			log.Println("download task idle")
 		case page := <-s.downloadChan:
+			log.Println("\r\ndownload per sleep\r\n")
+			time.Sleep(75 * time.Millisecond)
+
 			s.downloadData(page)
+
+			s.currentDownloadCount = s.currentDownloadCount + 1
+			s.downloadCount = s.downloadCount + 1
+
+			sleepMillisecond := 750
+			if s.currentDownloadCount == s.perSecondDownload {
+				log.Println("\r\ndownload limit speed sleep\r\n")
+				time.Sleep(time.Duration(sleepMillisecond) * time.Millisecond)
+				s.currentDownloadCount = 0
+			}
+
+			//每下载50条数据休眠随机时间
+			if s.currentDownloadCount%30 == 0 {
+				rndSleep := glib.RandIntRange(1500, 5000)
+				log.Printf("\r\ndownload rand sleep: %d\r\n", rndSleep)
+				time.Sleep(time.Duration(rndSleep) * time.Millisecond)
+			}
 		}
 	}
 }
@@ -136,7 +164,7 @@ func (s *Spider) download() {
 func (s *Spider) downloadData(page IPage) {
 	if !s.isDone {
 		//下载数据
-		page.GetContent(s.request)
+		page.GetData(s.request)
 
 		s.parseChan <- page
 	}
@@ -148,7 +176,7 @@ func (s *Spider) downloadData(page IPage) {
 func (s *Spider) parse() {
 	for {
 		select {
-		case <-time.After(time.Second * 30):
+		case <-time.After(time.Minute * 5):
 			log.Println("parse task idle")
 		case page := <-s.parseChan:
 			go s.parseData(page)

@@ -1,6 +1,7 @@
 package gspider
 
 import (
+	"errors"
 	"io"
 	"net/http"
 )
@@ -36,7 +37,7 @@ type (
 	 * Html响应接口
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	IHtmlResponse interface {
-		GetContent() []byte
+		GetData() []byte
 		GetHeader() http.Header
 		GetStatusCode() int
 		GetStatus() string
@@ -72,7 +73,7 @@ type (
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	HtmlResponse struct {
 		Header     http.Header
-		Content    []byte
+		Data       []byte
 		StatusCode int
 		Status     string
 	}
@@ -92,6 +93,10 @@ func NewHtmlRequest() IHtmlRequest {
  * Get请求
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 func (s *HtmlRequest) Get(url string) (IHtmlResponse, error) {
+	if len(url) == 0 {
+		return nil, errors.New("argument url error")
+	}
+
 	if len(s.headers) > 0 {
 		s.request.Headers = s.headers
 	}
@@ -110,8 +115,8 @@ func (s *HtmlRequest) Get(url string) (IHtmlResponse, error) {
 	httpResponse := new(HtmlResponse)
 	httpResponse.Header = resp.Header
 
-	if content, err := resp.Content(); err == nil {
-		httpResponse.Content = content
+	if data, err := resp.Content(); err == nil {
+		httpResponse.Data = data
 	}
 
 	httpResponse.StatusCode = resp.StatusCode
@@ -157,8 +162,8 @@ func (s *HtmlRequest) Post(url string) (IHtmlResponse, error) {
 	httpResponse := new(HtmlResponse)
 	httpResponse.Header = resp.Header
 
-	if content, err := resp.Content(); err == nil {
-		httpResponse.Content = content
+	if data, err := resp.Content(); err == nil {
+		httpResponse.Data = data
 	}
 
 	httpResponse.StatusCode = resp.StatusCode
@@ -212,8 +217,8 @@ func (s *HtmlRequest) SetFiles(files FormFiles) {
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * 获取请求内容
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-func (s *HtmlResponse) GetContent() []byte {
-	return s.Content
+func (s *HtmlResponse) GetData() []byte {
+	return s.Data
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
