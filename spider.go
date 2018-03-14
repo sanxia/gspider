@@ -149,8 +149,8 @@ func (s *Spider) download() {
 			}
 
 			//每下载50条数据休眠随机时间
-			if s.currentDownloadCount%30 == 0 {
-				rndSleep := glib.RandIntRange(1500, 5000)
+			if s.currentDownloadCount%50 == 0 {
+				rndSleep := glib.RandIntRange(2000, 5000)
 				log.Printf("\r\ndownload rand sleep: %d\r\n", rndSleep)
 				time.Sleep(time.Duration(rndSleep) * time.Millisecond)
 			}
