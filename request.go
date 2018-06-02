@@ -26,6 +26,8 @@ type (
 		Get(url string) (IHtmlResponse, error)
 		Post(url string) (IHtmlResponse, error)
 
+		GetRequestCount() int
+
 		SetUserAgent(userAgent string)
 		SetHeaders(headers map[string]string)
 		SetParams(params map[string]string)
@@ -61,15 +63,16 @@ type (
 	 * Html请求数据结构
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	HtmlRequest struct {
-		userAgents []string
-		userAgent  string
-		headers    map[string]string
-		params     map[string]string
-		cookies    map[string]string
-		json       map[string]string
-		data       map[string]string
-		files      FormFiles
-		request    *request.Request
+		userAgents   []string
+		userAgent    string
+		headers      map[string]string
+		params       map[string]string
+		cookies      map[string]string
+		json         map[string]string
+		data         map[string]string
+		files        FormFiles
+		request      *request.Request
+		requestCount int
 	}
 
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -170,6 +173,8 @@ func (s *HtmlRequest) Get(url string) (IHtmlResponse, error) {
 	httpResponse.StatusCode = resp.StatusCode
 	httpResponse.Status = resp.Status
 
+	s.requestCount = s.requestCount + 1
+
 	return httpResponse, err
 }
 
@@ -222,7 +227,16 @@ func (s *HtmlRequest) Post(url string) (IHtmlResponse, error) {
 	httpResponse.StatusCode = resp.StatusCode
 	httpResponse.Status = resp.Status
 
+	s.requestCount = s.requestCount + 1
+
 	return httpResponse, err
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * 获取请求次数
+ * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+func (s *HtmlRequest) GetRequestCount() int {
+	return s.requestCount
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

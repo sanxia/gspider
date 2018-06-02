@@ -79,12 +79,13 @@ func (s *Page) GetData(request IHtmlRequest) []byte {
 	} else {
 		//从Url下载数据
 		if request != nil {
-			resp, err := request.Get(s.Url)
-			if err == nil {
-				data = resp.GetData()
-				s.Data = data
-			} else {
-				log.Printf("GetData error: %v", err)
+			if len(s.Url) > 0 {
+				if resp, err := request.Get(s.Url); err == nil {
+					data = resp.GetData()
+					s.Data = data
+				} else {
+					log.Printf("GetData request error: %v", err)
+				}
 			}
 		}
 	}

@@ -64,7 +64,7 @@ func NewSpider(maxCount int) ISpider {
 
 	spider := &Spider{
 		analyzers:         make(map[string]IAnalyzer, 0),
-		perSecondDownload: 5,
+		perSecondDownload: 6,
 		downloadChan:      make(chan IPage, maxCount),
 		parseChan:         make(chan IPage, maxCount),
 		resultChan:        make(chan *SpiderResult, maxCount),
@@ -133,25 +133,25 @@ func (s *Spider) download() {
 		case <-time.After(time.Minute * 5):
 			log.Println("download task idle")
 		case page := <-s.downloadChan:
-			log.Println("\r\ndownload per sleep\r\n")
-			time.Sleep(75 * time.Millisecond)
+			sleepMillisecond := 15
+			log.Println("download per sleep\r\n")
+			time.Sleep(time.Duration(sleepMillisecond) * time.Millisecond)
 
 			s.downloadData(page)
 
 			s.currentDownloadCount = s.currentDownloadCount + 1
 			s.downloadCount = s.downloadCount + 1
 
-			sleepMillisecond := 750
 			if s.currentDownloadCount == s.perSecondDownload {
-				log.Println("\r\ndownload limit speed sleep\r\n")
-				time.Sleep(time.Duration(sleepMillisecond) * time.Millisecond)
+				log.Println("download limit speed sleep\r\n")
+				time.Sleep(time.Duration(sleepMillisecond*2) * time.Millisecond)
 				s.currentDownloadCount = 0
 			}
 
 			//每下载50条数据休眠随机时间
-			if s.currentDownloadCount%50 == 0 {
-				rndSleep := glib.RandIntRange(2000, 5000)
-				log.Printf("\r\ndownload rand sleep: %d\r\n", rndSleep)
+			if s.currentDownloadCount%5000 == 0 {
+				rndSleep := glib.RandIntRange(1000, 2000)
+				log.Printf("download rand sleep: %d\r\n", rndSleep)
 				time.Sleep(time.Duration(rndSleep) * time.Millisecond)
 			}
 		}

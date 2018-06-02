@@ -13,7 +13,7 @@ type (
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	ISpiderHandler interface {
 		GetSpider() ISpider
-		Hanlder(result *SpiderResult)
+		Handler(result *SpiderResult)
 	}
 
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
