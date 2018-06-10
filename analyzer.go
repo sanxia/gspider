@@ -1,5 +1,9 @@
 package gspider
 
+import (
+	"github.com/sanxia/glib"
+)
+
 /* ================================================================================
  * Html分析器
  * qq group: 582452342
@@ -19,6 +23,6 @@ type (
 	 * 分析器数据结构
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	Analyzer struct {
-		Request IHtmlRequest
+		Request glib.IHttpRequest
 	}
 )

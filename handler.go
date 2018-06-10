@@ -1,5 +1,9 @@
 package gspider
 
+import (
+	"github.com/sanxia/glib"
+)
+
 /* ================================================================================
  * 爬虫处理器
  * qq group: 582452342
@@ -20,6 +24,6 @@ type (
 	 * 爬虫处理器数据结构
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	SpiderHandler struct {
-		Request IHtmlRequest
+		Request glib.IHttpRequest
 	}
 )

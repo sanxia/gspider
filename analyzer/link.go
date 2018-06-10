@@ -9,6 +9,7 @@ import (
 )
 
 import (
+	"github.com/sanxia/glib"
 	"github.com/sanxia/gspider"
 )
 
@@ -28,7 +29,7 @@ type (
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * 初始化链接解析器
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-func NewLinkAnalyzer(reqeust gspider.IHtmlRequest) gspider.IAnalyzer {
+func NewLinkAnalyzer(reqeust glib.IHttpRequest) gspider.IAnalyzer {
 	return &LinkAnalyzer{
 		&gspider.Analyzer{
 			Request: reqeust,

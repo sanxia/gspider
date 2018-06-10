@@ -22,7 +22,7 @@ type (
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	ISpider interface {
 		Start()
-		SetRequest(request IHtmlRequest)
+		SetRequest(request glib.IHttpRequest)
 		RegisterAnalyzer(name string, analyzer IAnalyzer)
 		AddPage(page IPage)
 		GetResult() chan *SpiderResult
@@ -33,7 +33,7 @@ type (
 	 * 爬虫数据结构
 	 * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	Spider struct {
-		request              IHtmlRequest
+		request              glib.IHttpRequest
 		analyzers            map[string]IAnalyzer
 		downloadChan         chan IPage
 		parseChan            chan IPage
@@ -100,7 +100,7 @@ func (s *Spider) Start() {
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * 设置请求
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-func (s *Spider) SetRequest(request IHtmlRequest) {
+func (s *Spider) SetRequest(request glib.IHttpRequest) {
 	s.request = request
 }
 

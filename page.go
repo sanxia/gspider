@@ -24,7 +24,7 @@ type (
 		GetTag() string
 		GetName() string
 		GetUrl() string
-		GetData(request IHtmlRequest) []byte
+		GetData(request glib.IHttpRequest) []byte
 		GetExtend() interface{}
 	}
 
@@ -59,7 +59,7 @@ func (s *Page) GetUrl() string {
  * 获取页面数据
  * 优先级由高到低 Content > Filename > Url
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-func (s *Page) GetData(request IHtmlRequest) []byte {
+func (s *Page) GetData(request glib.IHttpRequest) []byte {
 	var data []byte
 
 	if len(s.Data) > 0 {
